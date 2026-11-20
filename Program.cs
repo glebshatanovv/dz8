@@ -1,229 +1,123 @@
 ﻿
 using System;
-using System.Collections;
-using System.IO;
+using System.Collections.Generic;
 
-enum AccountType
+namespace ConsoleApp1
 {
-    Текущий,
-    Сберегательный
-}
-
-class BankTransaction
-{
-    private readonly DateTime date;
-    private readonly double amount;
-
-    public BankTransaction(double sum)
+    class Program
     {
-        date = DateTime.Now;
-        amount = sum;
-    }
-
-    public override string ToString()
-    {
-        return $"Дата: {date}, Сумма: {amount} рублей";
-    }
-}
-
-class BankAccount : IDisposable
-{
-    private static int lastNumber = 1000;
-
-    private Queue transactions = new Queue();
-    private int accountNumber;
-    private double balance;
-    private AccountType type;
-
-    static void Main()
-    {
-        BankAccount account1 = new BankAccount(
-            5000, AccountType.Сберегательный);
-
-        BankAccount account2 = new BankAccount(
-            2000, AccountType.Текущий);
-
-        Console.WriteLine("\nПервый счет:");
-        account1.PrintInfo();
-
-        Console.WriteLine("\nВторой счет:");
-        account2.PrintInfo();
-
-        Console.WriteLine("\nПосле перевода:");
-        account1.Transfer(account2, 1000);
-
-        Console.WriteLine("\nПервый счет:");
-        account1.PrintInfo();
-
-        Console.WriteLine("\nВторой счет:");
-        account2.PrintInfo();
-
-        // Создание третьего счета
-        using (BankAccount account = new BankAccount(
-            5000, AccountType.Сберегательный))
+        static void Main(string[] args)
         {
-            Console.WriteLine("\nТретий счет:");
-            account.PrintInfo();
+            List<Song> songs = new List<Song>();
 
-            account.Deposit(1000);
-            account.Withdraw(2000);
+            Song song1 = new Song("Rosalia", "T-Fest");
 
-            Console.WriteLine("\nПосле операций:");
-            account.PrintInfo();
-        }
+            Song song2 = new Song("back to friend", "sombr", song1);
 
-        // Сохраняем операции первых двух счетов
-        account1.Dispose();
-        account2.Dispose();
+            Song song3 = new Song("Back Home", "Yeat", song2);
 
-        Console.WriteLine("\nПроводки записаны в файл.");
-    }
+            Song song4 = new Song("Царица", "ANNA ASTI", song3);
 
-    // Генерация уникального номера
-    private static int GenerateNumber()
-    {
-        lastNumber++;
-        return lastNumber;
-    }
+            // Создание объекта без параметров
+            Song mySong = new Song();
 
-    // Конструкторы
-    public BankAccount(double balance)
-    {
-        accountNumber = GenerateNumber();
-        this.balance = balance;
-        type = AccountType.Текущий;
-    }
+            songs.Add(song1);
+            songs.Add(song2);
+            songs.Add(song3);
+            songs.Add(song4);
 
-    public BankAccount(AccountType type)
-    {
-        accountNumber = GenerateNumber();
-        balance = 0;
-        this.type = type;
-    }
+            Console.WriteLine("Список песен:");
 
-    public BankAccount(double balance, AccountType type)
-    {
-        accountNumber = GenerateNumber();
-        this.balance = balance;
-        this.type = type;
-    }
-
-    public BankAccount()
-    {
-        accountNumber = GenerateNumber();
-        balance = 0;
-        type = AccountType.Текущий;
-    }
-
-    public int AccountNumber
-    {
-        get { return accountNumber; }
-    }
-
-    public double Balance
-    {
-        get { return balance; }
-    }
-
-    public AccountType Type
-    {
-        get { return type; }
-        set { type = value; }
-    }
-
-    // Вывод информации о счете
-    public void PrintInfo()
-    {
-        Console.WriteLine($"\nНомер счета: {accountNumber}");
-        Console.WriteLine($"Баланс: {balance}");
-        Console.WriteLine($"Тип счета: {type}");
-    }
-
-    // Пополнение счета
-    public void Deposit(double sum)
-    {
-        if (sum > 0)
-        {
-            balance += sum;
-
-            BankTransaction transaction =
-                new BankTransaction(sum);
-
-            transactions.Enqueue(transaction);
-
-            Console.WriteLine(
-                $"Пополнение на {sum} рублей выполнено.");
-        }
-        else
-        {
-            Console.WriteLine("Некорректная сумма.");
-        }
-    }
-
-    // Снятие денег
-    public void Withdraw(double sum)
-    {
-        if (sum > 0 && sum <= balance)
-        {
-            balance -= sum;
-
-            BankTransaction transaction =
-                new BankTransaction(-sum);
-
-            transactions.Enqueue(transaction);
-
-            Console.WriteLine($"Снято {sum} рублей.");
-        }
-        else
-        {
-            Console.WriteLine(
-                "Недостаточно средств или некорректная сумма.");
-        }
-    }
-
-    // Перевод денег на другой счет
-    public void Transfer(BankAccount account, double sum)
-    {
-        if (account != null && sum > 0 && sum <= balance)
-        {
-            balance -= sum;
-            account.balance += sum;
-
-            BankTransaction transaction1 =
-                new BankTransaction(-sum);
-
-            transactions.Enqueue(transaction1);
-
-            BankTransaction transaction2 =
-                new BankTransaction(sum);
-
-            account.transactions.Enqueue(transaction2);
-
-            Console.WriteLine(
-                $"Перевод {sum} рублей выполнен успешно.");
-        }
-        else
-        {
-            Console.WriteLine(
-                "Ошибка перевода: недостаточно средств или некорректная сумма.");
-        }
-    }
-
-    // Запись проводок в файл
-    public void Dispose()
-    {
-        using (StreamWriter writer =
-               new StreamWriter("transactions.txt", true))
-        {
-            while (transactions.Count > 0)
+            foreach (Song song in songs)
             {
-                BankTransaction transaction =
-                    (BankTransaction)transactions.Dequeue();
+                song.Print();
+            }
 
-                writer.WriteLine(transaction);
+            Console.WriteLine();
+
+            Console.WriteLine("Сравнение первой и второй песни:");
+
+            if (songs[0].Equals(songs[1]))
+            {
+                Console.WriteLine("Песни одинаковые");
+            }
+            else
+            {
+                Console.WriteLine("Песни разные");
             }
         }
+    }
 
-        GC.SuppressFinalize(this);
+    class Song
+    {
+        string name;
+        string author;
+        Song prev;
+
+        // Конструктор без параметров
+        public Song()
+        {
+            name = "";
+            author = "";
+            prev = null;
+        }
+
+        // Конструктор с названием и автором
+        public Song(string name, string author)
+        {
+            this.name = name;
+            this.author = author;
+            prev = null;
+        }
+
+        // Конструктор с названием, автором и предыдущей песней
+        public Song(string name, string author, Song prev)
+        {
+            this.name = name;
+            this.author = author;
+            this.prev = prev;
+        }
+
+        public void SetName(string name)
+        {
+            this.name = name;
+        }
+
+        public void SetAuthor(string author)
+        {
+            this.author = author;
+        }
+
+        public void SetPrev(Song prev)
+        {
+            this.prev = prev;
+        }
+
+        public void Print()
+        {
+            Console.WriteLine(Title());
+        }
+
+        public string Title()
+        {
+            return name + " - " + author;
+        }
+
+        public override bool Equals(object d)
+        {
+            if (d == null || !(d is Song))
+            {
+                return false;
+            }
+
+            Song other = (Song)d;
+
+            return name == other.name && author == other.author;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(name, author);
+        }
     }
 }
